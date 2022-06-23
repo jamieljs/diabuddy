@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".logbook.EditActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/edit_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:theme="@style/Theme.Diabuddy.AppBarOverlay">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/edit_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/Theme.Diabuddy.PopupOverlay" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_appbar"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/logbook_edit_instructions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:text="@string/logbook_edit_instructions"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/date_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/ic_today_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_date"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_date"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_date"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_time"
+                app:layout_constraintLeft_toRightOf="@id/date_icon"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_time"
+                app:layout_constraintStart_toEndOf="@id/date_icon"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_instructions">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/date_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/date"
+                    android:inputType="date" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_time"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toEndOf="@id/logbook_edit_date"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_instructions">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/time_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/time"
+                    android:inputType="time" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/reading_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/ic_droplet_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_reading"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_reading"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_reading"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_reading"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_reading"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                app:layout_constraintEnd_toStartOf="@id/reading_stt"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toLeftOf="@id/reading_stt"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_date">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/reading_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/reading_stt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mic_white_24dp"
+                android:theme="@style/Theme.Diabuddy.ImageButton"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_reading"
+                app:layout_constraintEnd_toEndOf="@id/food_stt"
+                app:layout_constraintRight_toRightOf="@id/food_stt"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_reading" />
+
+            <ImageView
+                android:id="@+id/insulin_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/syringe_white"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_bolus"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_bolus"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_bolus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_bolus"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_bolus"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginRight="@dimen/fab_margin"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_corr"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_corr"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_reading">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/bolus_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/bolus"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_corr"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginRight="@dimen/fab_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/logbook_edit_bolus"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toEndOf="@id/logbook_edit_bolus"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_reading">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/corr_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/correction"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_basal"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@id/logbook_edit_bolus"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_bolus"
+                app:layout_constraintRight_toRightOf="@id/logbook_edit_bolus"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_bolus"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_bolus">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/basal_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/basal"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/insulin_total_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginLeft="@dimen/fab_margin"
+                android:text="@string/total"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_basal"
+                app:layout_constraintLeft_toRightOf="@id/logbook_edit_basal"
+                app:layout_constraintStart_toEndOf="@id/logbook_edit_basal"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_basal" />
+
+            <TextView
+                android:id="@+id/insulin_total_number_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="3dp"
+                android:text="0.0"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_basal"
+                app:layout_constraintLeft_toRightOf="@id/insulin_total_tv"
+                app:layout_constraintStart_toEndOf="@id/insulin_total_tv"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_basal" />
+
+            <TextView
+                android:id="@+id/insulin_units_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="3dp"
+                android:text="@string/units"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_basal"
+                app:layout_constraintLeft_toRightOf="@id/insulin_total_number_tv"
+                app:layout_constraintStart_toEndOf="@id/insulin_total_number_tv"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_basal" />
+
+            <ImageView
+                android:id="@+id/food_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/ic_fastfood_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_carbs"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_carbs"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_carbs"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_carbs"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_carbs"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginRight="@dimen/fab_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_basal">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/carbs_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_carbs"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_food"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toStartOf="@id/food_stt"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_carbs"
+                app:layout_constraintRight_toLeftOf="@id/food_stt"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_carbs"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_carbs">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/food_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/food_description"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/food_stt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mic_white_24dp"
+                android:theme="@style/Theme.Diabuddy.ImageButton"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_food"
+                app:layout_constraintEnd_toEndOf="@id/logbook_edit_carbs"
+                app:layout_constraintRight_toRightOf="@id/logbook_edit_carbs"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_food" />
+
+            <Button
+                android:id="@+id/food_template_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_from_food_template"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_food"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_food"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_food" />
+
+            <ImageView
+                android:id="@+id/exercise_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/ic_directions_run_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_exercise"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_bolus"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_bolus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_exercise"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_exercise"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginRight="@dimen/fab_margin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintTop_toBottomOf="@id/food_template_button">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/exercise_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/exercise_duration_in_minutes"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/intensity_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/intensity"
+                app:layout_constraintBottom_toBottomOf="@id/intensity_slider"
+                app:layout_constraintEnd_toStartOf="@id/intensity_slider"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toLeftOf="@id/intensity_slider"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintTop_toTopOf="@id/intensity_slider" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/intensity_slider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:stepSize="1"
+                android:valueFrom="0"
+                android:valueTo="5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/intensity_tv"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toEndOf="@id/intensity_tv"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_exercise" />
+
+            <ImageView
+                android:id="@+id/notes_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/ic_text_snippet_white_24dp"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_notes"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_bolus"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_bolus"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_notes"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_notes"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginBottom="210dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_date"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
+                app:layout_constraintRight_toLeftOf="@id/notes_stt"
+                app:layout_constraintEnd_toStartOf="@id/notes_stt"
+                app:layout_constraintTop_toBottomOf="@id/intensity_tv">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/notes_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/notes_e_g_hba1c"
+                    android:inputType="textMultiLine" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/notes_stt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_mic_white_24dp"
+                android:theme="@style/Theme.Diabuddy.ImageButton"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_notes"
+                app:layout_constraintEnd_toEndOf="@id/food_stt"
+                app:layout_constraintRight_toRightOf="@id/food_stt"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_notes" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <View
+        android:id="@+id/translucent_background_1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/light_translucent_black"
+        app:layout_constraintTop_toTopOf="@id/logbook_save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:clickable="true"/>
+    <View
+        android:id="@+id/translucent_background_2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fab_margin"
+        android:background="@color/light_translucent_black"
+        app:layout_constraintBottom_toTopOf="@id/translucent_background_1"
+        android:clickable="true"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/logbook_save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/fab_margin"
+        android:text="@string/save_all_changes"
+        android:textAlignment="center"
+        android:backgroundTint="@color/teal_extra_light"
+        app:icon="@drawable/ic_done_white_24dp"
+        app:layout_constraintLeft_toLeftOf="@id/logbook_cancel"
+        app:layout_constraintStart_toStartOf="@id/logbook_cancel"
+        app:layout_constraintRight_toRightOf="@id/logbook_delete"
+        app:layout_constraintEnd_toEndOf="@id/logbook_delete"
+        app:layout_constraintBottom_toTopOf="@id/logbook_cancel"/>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/logbook_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/fab_margin"
+        android:layout_marginHorizontal="8dp"
+        android:text="@string/cancel"
+        android:backgroundTint="@color/yellow"
+        app:icon="@drawable/ic_close_white_24dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/logbook_delete"
+        app:layout_constraintEnd_toStartOf="@id/logbook_delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/logbook_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/fab_margin"
+        android:layout_marginHorizontal="8dp"
+        android:text="@string/delete"
+        android:backgroundTint="@color/red"
+        app:icon="@drawable/ic_delete_white_24dp"
+        app:layout_constraintLeft_toRightOf="@id/logbook_cancel"
+        app:layout_constraintStart_toEndOf="@id/logbook_cancel"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

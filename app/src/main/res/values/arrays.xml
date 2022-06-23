@@ -1,0 +1,62 @@
+<resources>
+    <string-array name="management_tips">
+        <item>If you\'re having troubles managing your blood sugar, try testing more frequently so that you can do corrections when necessary or treat hypos when required.</item>
+        <item>Exercise can be beneficial to improving blood sugars as an active lifestyle can improve insulin efficacy / reduce insulin resistance, but also don\'t forget to monitor your sugars!</item>
+        <item>Watch your diet; make sure to account for high-sugar foods, especially hidden sugars like sauces/dips, and inject sufficient insulin.</item>
+        <item>You may want to consider switching to foods with lower glycemic index (GI) such as brown rice or whole grain, as these foods will make it easier to keep blood sugars in control.</item>
+        <item>Many of the hormones in your body (other than insulin) actually raise your blood sugar, which means that factors such as stress can also affect your blood sugar levels! It may be useful to keep track of your activities for the day and how you\'re feeling in considering how much you should inject.</item>
+    </string-array>
+
+    <string-array name="encouragement">
+        <item>It\'s okay, it happens to all of us! Hang in there!</item>
+        <item>Don\'t worry, keep on trying. You can do it!</item>
+        <item>You are not alone in this! Many others just like you are learning from everyday experiences too. All the best!</item>
+        <item>Never give up! Some days may feel really bad but I believe in you, it\'ll get better!</item>
+        <item>Don\'t panic, you\'ve been trying your best for the moment! Keep it up, you\'re getting there!</item>
+    </string-array>
+
+    <string-array name="frequent_low_warnings">
+        <item>Oh no, you seem to be having quite a lot of hypos recently! If you\'ve been having hypos frequently, perhaps you should consult your doctor on adjusting your diet or reducing your insulin intake. Don\'t worry, you can do it!</item>
+    </string-array>
+    <string-array name="frequent_high_warnings">
+        <item>Hi there, you seem to be having quite a lot of hypers recently. If you\'ve been having frequent hypers, perhaps you (and your doctor/dietician) could monitor your blood sugar more closely and check on your diet to improve your carbohydrate intake and carb-counting. This will help make sure you\'re administering enough insulin. All the best and don\'t give up, things will get better!</item>
+    </string-array>
+
+    <string-array name="very_low_warnings">
+        <item>Hey there, you\'ve just had a really low hypo! Hope you\'ve treated it and are feeling a little better. Remember to always carry hypo foods (fast-acting sugars such as sweets/sweet drinks and a small snack) with you, so that you can treat your hypo immediately!</item>
+        <item>Hello there, please treat your low hypo as soon as possible if you haven\'t! Remember to test your blood sugar again after 10 to 15 minutes to make sure that your blood sugar is back to normal.</item>
+        <item>Hi, hope you\'ve treated your hypo! If you\'ve been having hypos frequently recently, perhaps you should consult your doctor on reducing your insulin intake.</item>
+    </string-array>
+
+    <string-array name="very_high_warnings">
+        <item>Hey there, your blood sugar just spiked really high! Don\'t panic, maybe you could consider taking a little bit of insulin or going for some exercise to bring it down.</item>
+        <item>Hello there, hope you\'re feeling alright despite your high blood sugar! Perhaps you could try adopting a more active lifestyle or cutting down on fast-acting sugars such as sweet drinks.</item>
+        <item>Hi, you\'ve just had a really high hyper. If you\'ve been having hypers frequently recently, hang in there! Perhaps you (and possibly your doctor/dietician) could check on your diet to improve your overall carbohydrate intake and carb-counting, so as to make sure you\'re administering enough insulin.</item>
+    </string-array>
+
+    <string-array name="faq_questions">
+        <item>Is there a cure for diabetes?</item>
+        <item>What should my blood sugar be?</item>
+        <item>What is HbA1c?</item>
+        <item>What should I do if my blood sugar was consistently high in finger pricks over the last 24 hours?</item>
+        <item>What happens if I forget to do my insulin injection?</item>
+        <item>What happens if I overdose on insulin?</item>
+        <item>How am I supposed to know how much insulin to inject?</item>
+        <item>Can I do sports like everyone else?</item>
+        <item>Can I live my life normally?</item>
+        <item>With so many finger pricks, can I still do activities that require me to use my fingers a lot (e.g. playing a musical instrument)?</item>
+    </string-array>
+
+    <string-array name="faq_responses">
+        <item>Unfortunately, based on current research and findings, there is no cure for diabetes. Diabetes is a chronic illness which can be controlled with proper care and management.</item>
+        <item>Your personal blood sugar level targets may depend on factors such as your lifestyle, your treatment and so on, which you could discuss with your doctor. As a general rule of thumb, some blood sugar level targets are as follows: 4 to 7 mmol/L (about 70 to 130 mg/dL) before meals, and under 9 mmol/L (about 160 mg/dL) for type 1 diabetics / under 8.5mmol/L (about 150 mg/dL) for type 2 diabetics.</item>
+        <item>The HbA1C (Haemoglobin A1c) (expressed as a percentage) is a blood test that gives an indication of your blood glucose levels over the past three months. If you have diabetes, an ideal HbA1c level is 48mmol/mol (6.5%) or below. The higher your HbA1c, the higher your risk of diabetes-related complications.</item>
+        <item>You may wish to consider doing finger pricks more frequently to correct your highs. High blood sugars could be caused by illness, stress, diet, inactivity and so on; you could try to eliminate or reduce these factors, or contact your doctor or nurse to find out more.</item>
+        <item>If you missed an insulin dose, you may feel symptoms of hyperglycemia, such as thirst, frequent urge to go to the toilet or blurred vision. Do a blood test and inject the required amount of insulin to correct the high glucose reading as soon as possible.</item>
+        <item>If you overdose on insulin, you may feel symptoms of hypoglycaemia, such as shakiness and hunger. Do a blood test if able, and treat the hypo symptoms with fast acting sugars like sweets/sugared drinks, followed by food and snacks to bring the blood glucose back to normal levels as soon as possible.</item>
+        <item>Your doctor or nurse would probably have prescribed an insulin dose regimen for you; however, you still need to calculate some of your insulin doses. There are many factors affecting how much insulin you need, such as age, level of activity, insulin sensitivity and amount of food you are taking. Your doctor or nurse should be able to tell you how much insulin you need for each gram of carbohydrates or each unit of blood sugar to correct; you can start with this as a baseline and with experience, adjust your doses accordingly.</item>
+        <item>People with diabetes can exercise and play sports, just like everyone else. However, it\'s important to talk to your doctor before starting any new exercise routine that may significantly increase your activity level. Your doctor will let you know about any changes in testing schedule, medication, or other things you should consider for exercise and sports.</item>
+        <item>One can still live a long, healthy life with diabetes. However, active diabetes management and control is important. You should try to be as involved in your own diabetes care as possible; see your doctor or nurse regularly, take all of your medications, stay active, and learn more about the foods you eat!</item>
+        <item>Yes. Finger pricks are like small ant bites; your finger will not hurt for very long after being pricked, and it is safe to play musical instruments after your finger prick has stopped bleeding.</item>
+    </string-array>
+</resources>

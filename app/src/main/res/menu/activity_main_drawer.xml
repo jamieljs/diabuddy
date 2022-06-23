@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/logbookFragment"
+            android:icon="@drawable/ic_book_white_24dp"
+            android:title="@string/title_logbook" />
+        <item
+            android:id="@+id/trendsFragment"
+            android:icon="@drawable/ic_insights_white_24dp"
+            android:title="@string/title_trends" />
+        <item
+            android:id="@+id/messagesFragment"
+            android:icon="@drawable/ic_question_answer_white_24dp"
+            android:title="@string/title_messages" />
+        <item
+            android:id="@+id/siteRotationFragment"
+            android:icon="@drawable/syringe_white"
+            android:title="@string/title_activity_injection_sites" />
+        <item
+            android:id="@+id/foodTemplateFragment"
+            android:icon="@drawable/ic_fastfood_white_24dp"
+            android:title="@string/title_activity_food_template" />
+        <item
+            android:id="@+id/nutritionFragment"
+            android:icon="@drawable/ic_menu_book_white_24dp"
+            android:title="@string/title_nutrition" />
+        <item
+            android:id="@+id/challengesFragment"
+            android:icon="@drawable/ic_military_tech_white_24dp"
+            android:title="@string/title_challenges" />
+    </group>
+</menu>

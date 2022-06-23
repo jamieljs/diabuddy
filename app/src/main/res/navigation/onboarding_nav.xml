@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/onboarding_nav.xml"
+    app:startDestination="@id/onboardSettingsFragment">
+
+    <fragment
+        android:id="@+id/onboardSettingsFragment"
+        android:name="com.example.diabuddy2021.onboarding.OnboardSettingsFragment"
+        android:label="fragment_onboard_settings"
+        tools:layout="@layout/fragment_onboard_settings" >
+        <action
+            android:id="@+id/action_onboardSettingsFragment_to_walkthroughFragment"
+            app:destination="@id/walkthroughFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/walkthroughFragment"
+        android:name="com.example.diabuddy2021.onboarding.WalkthroughFragment"
+        android:label="fragment_walkthrough"
+        tools:layout="@layout/fragment_walkthrough" >
+        <action
+            android:id="@+id/action_walkthroughFragment_to_onboardSettingsFragment"
+            app:destination="@id/onboardSettingsFragment"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right" />
+    </fragment>
+</navigation>

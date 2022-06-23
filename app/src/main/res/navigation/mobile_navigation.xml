@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/logbookFragment">
+    <fragment
+        android:id="@+id/logbookFragment"
+        android:name="com.example.diabuddy2021.logbook.LogbookListFragment"
+        android:label="@string/title_logbook"
+        tools:layout="@layout/fragment_logbook_list"/>
+    <fragment
+        android:id="@+id/challengesFragment"
+        android:name="com.example.diabuddy2021.challenges.ChallengesFragment"
+        android:label="@string/title_challenges"
+        tools:layout="@layout/fragment_challenges" />
+    <fragment
+        android:id="@+id/messagesFragment"
+        android:name="com.example.diabuddy2021.messages.MessagesFragment"
+        android:label="@string/title_messages"
+        tools:layout="@layout/fragment_messages" />
+    <fragment
+        android:id="@+id/siteRotationFragment"
+        android:name="com.example.diabuddy2021.siterotation.SiteRotationFragment"
+        android:label="@string/title_activity_injection_sites"
+        tools:layout="@layout/fragment_site_rotation" />
+    <fragment
+        android:id="@+id/foodTemplateFragment"
+        android:name="com.example.diabuddy2021.foodtemplate.FoodTemplateFragment"
+        android:label="@string/title_activity_food_template"
+        tools:layout="@layout/fragment_food_template" />
+    <fragment
+        android:id="@+id/nutritionFragment"
+        android:name="com.example.diabuddy2021.nutrition.NutritionFragment"
+        android:label="@string/title_nutrition"
+        tools:layout="@layout/fragment_nutrition" />
+    <fragment
+        android:id="@+id/trendsFragment"
+        android:name="com.example.diabuddy2021.trends.TrendsFragment"
+        android:label="@string/title_trends"
+        tools:layout="@layout/fragment_trends" />
+</navigation>

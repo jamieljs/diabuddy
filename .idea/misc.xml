@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="app/src/main/res/drawable/default_dot.xml" value="0.327" />
+        <entry key="app/src/main/res/drawable/ic_add_white_24dp.xml" value="0.327" />
+        <entry key="app/src/main/res/drawable/ic_book_white_24dp.xml" value="0.327" />
+        <entry key="app/src/main/res/drawable/ic_close_white_24dp.xml" value="0.327" />
+        <entry key="app/src/main/res/drawable/ic_construction_white_24dp.xml" value="0.327" />
+        <entry key="app/src/main/res/drawable/ic_delete_forever_white_24dp.xml" value="0.1" />
+        <entry key="app/src/main/res/font/nunito.xml" value="0.125" />
+        <entry key="app/src/main/res/font/nunito_bold.xml" value="0.125" />
+        <entry key="app/src/main/res/font/nunito_italic.xml" value="0.125" />
+        <entry key="app/src/main/res/layout/activity_about.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_edit.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_feedback.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_food_template.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.3411458333333333" />
+        <entry key="app/src/main/res/layout/activity_messages.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_onboarding.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_site_rotation.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_user.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/app_bar_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/card_site.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_nutrition.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_onboard_sites.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/menu/activity_main_drawer.xml" value="0.35572916666666665" />
+        <entry key="app/src/main/res/menu/user.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
