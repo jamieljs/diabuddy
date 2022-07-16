@@ -88,7 +88,6 @@ public class MessagesActivity extends AppCompatActivity {
         nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-                // on scroll change we are checking when users scroll as bottom.
                 if (scrollY == 0) { // v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
                     loadingPB.setVisibility(View.VISIBLE);
                     if (vm.loadNextPage()) {
@@ -102,7 +101,7 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         recyclerView = findViewById(R.id.messages_recycler_view);
-        recyclerView.setVisibility(View.GONE);
+        nestedSV.setVisibility(View.GONE);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecyclerAdapter();
@@ -122,11 +121,11 @@ public class MessagesActivity extends AppCompatActivity {
                 messages.clear();
                 if (pairs.isEmpty()) {
                     empty.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
+                    nestedSV.setVisibility(View.GONE);
                     return;
                 }
                 empty.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.VISIBLE);
+                nestedSV.setVisibility(View.VISIBLE);
                 messages.addAll(pairs);
                 adapter.notifyDataSetChanged();
                 recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);

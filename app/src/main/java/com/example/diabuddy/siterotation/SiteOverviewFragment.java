@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.diabuddy2021.R;
+import com.example.diabuddy.R;
 
 import java.util.ArrayList;
 
@@ -36,7 +36,7 @@ public class SiteOverviewFragment extends Fragment {
     private TextView tv;
     private Button useThisBtn;
     private int index = -1;
-    private ArrayList<Pair<Pair<String, Boolean>,Integer>> list = new ArrayList<>();
+    private ArrayList<SiteViewModel.Site> list = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,7 +50,7 @@ public class SiteOverviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (index == -1) return;
-                SiteRotationActivity.vm.markOne(list.get(index).second, true);
+                SiteRotationActivity.vm.markOne(list.get(index).getId(), true);
             }
         });
 
@@ -69,14 +69,14 @@ public class SiteOverviewFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        final Observer<ArrayList<Pair<Pair<String, Boolean>,Integer>>> siteObserver = new Observer<ArrayList<Pair<Pair<String, Boolean>,Integer>>>() {
+        final Observer<ArrayList<SiteViewModel.Site>> siteObserver = new Observer<ArrayList<SiteViewModel.Site>>() {
             @Override
-            public void onChanged(ArrayList<Pair<Pair<String, Boolean>,Integer>> pairs) {
+            public void onChanged(ArrayList<SiteViewModel.Site> sites) {
                 list.clear();
-                list.addAll(pairs);
-                for (int i = 0; i < pairs.size(); i++) {
-                    if (!pairs.get(i).first.second) {
-                        tv.setText(pairs.get(i).first.first);
+                list.addAll(sites);
+                for (int i = 0; i < sites.size(); i++) {
+                    if (!sites.get(i).getUsed()) {
+                        tv.setText(sites.get(i).getName());
                         index = i;
                         useThisBtn.setEnabled(true);
                         return;

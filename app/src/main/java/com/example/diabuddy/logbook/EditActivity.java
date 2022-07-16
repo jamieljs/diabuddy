@@ -48,7 +48,7 @@ import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 public class EditActivity extends AppCompatActivity {
 
-    private int index = -1;
+    private String index = "";
     private final int REQ_CODE_SPEECH_READING = 200;
     private final int REQ_CODE_SPEECH_FOOD = 201;
     private final int REQ_CODE_SPEECH_NOTES = 202;
@@ -62,7 +62,7 @@ public class EditActivity extends AppCompatActivity {
     private ArrayAdapter<String> foodAdapter;
     private ArrayAdapter<String> mealAdapter;
     private LogbookEntry logbookEntry;
-    private EditText dateET, timeET, readingET, bolusET, corrET, basalET, carbsET, foodET, exerciseET, notesET;
+    private EditText dateET, timeET, readingET, bolusET, corrET, basalET, carbsET, foodET, exerciseET, hba1cET, ketonesET, systolicET, diastolicET, notesET;
     private Slider intensitySlider;
     private ImageButton readingStt, foodStt, notesStt;
 
@@ -74,9 +74,9 @@ public class EditActivity extends AppCompatActivity {
 
         if (getIntent() == null) return;
         if (getIntent().getExtras() != null) {
-            index = getIntent().getIntExtra("index", -1);
+            index = getIntent().getStringExtra("index");
         }
-        if (index == -1) {
+        if (index.isEmpty()) {
             Toast.makeText(this, "Logbook entry not found", Toast.LENGTH_LONG).show();
             finish();
         } else {
@@ -129,16 +129,20 @@ public class EditActivity extends AppCompatActivity {
 
             // glucose reading
             readingET = findViewById(R.id.reading_edit_text);
-            readingET.setText(String.valueOf(logbookEntry.getReading()));
+            if (logbookEntry.getReading() >= 0) readingET.setText(String.valueOf(logbookEntry.getReading()));
+            else readingET.setText("");
             readingET.setHint(getResources().getString(R.string.blood_glucose_reading) + " (" + LogbookListFragment.vm.getGlucoseUnit() + ")");
 
             // insulin
             bolusET = findViewById(R.id.bolus_edit_text);
             corrET = findViewById(R.id.corr_edit_text);
             basalET = findViewById(R.id.basal_edit_text);
-            bolusET.setText(String.valueOf(logbookEntry.getBolus()));
-            corrET.setText(String.valueOf(logbookEntry.getCorrection()));
-            basalET.setText(String.valueOf(logbookEntry.getBasal()));
+            if (logbookEntry.getBolus() >= 0) bolusET.setText(String.valueOf(logbookEntry.getBolus()));
+            else bolusET.setText("");
+            if (logbookEntry.getCorrection() >= 0) corrET.setText(String.valueOf(logbookEntry.getCorrection()));
+            else corrET.setText("");
+            if (logbookEntry.getBasal() >= 0) basalET.setText(String.valueOf(logbookEntry.getBasal()));
+            else basalET.setText("");
 
             TextView totalInsulinTV = findViewById(R.id.insulin_total_number_tv);
             TextWatcher watcher = new TextWatcher() {
@@ -149,7 +153,6 @@ public class EditActivity extends AppCompatActivity {
                 @Override
                 public void afterTextChanged(Editable s) {
                     try {
-
                         double value = (bolusET.getText().toString().isEmpty() ? 0 : Double.parseDouble(bolusET.getText().toString()))
                                 + (corrET.getText().toString().isEmpty() ? 0 : Double.parseDouble(corrET.getText().toString()))
                                 + (basalET.getText().toString().isEmpty() ? 0 : Double.parseDouble(basalET.getText().toString()));
@@ -162,12 +165,15 @@ public class EditActivity extends AppCompatActivity {
             bolusET.addTextChangedListener(watcher);
             corrET.addTextChangedListener(watcher);
             basalET.addTextChangedListener(watcher);
-            double value = Double.parseDouble(bolusET.getText().toString()) + Double.parseDouble(corrET.getText().toString()) + Double.parseDouble(basalET.getText().toString());
+            double value = (bolusET.getText().toString().isEmpty() ? 0 : Double.parseDouble(bolusET.getText().toString()))
+                    + (corrET.getText().toString().isEmpty() ? 0 : Double.parseDouble(corrET.getText().toString()))
+                    + (basalET.getText().toString().isEmpty() ? 0 : Double.parseDouble(basalET.getText().toString()));
             totalInsulinTV.setText(value + "");
 
             // food
             carbsET = findViewById(R.id.carbs_edit_text);
-            carbsET.setText(String.valueOf(logbookEntry.getCarbs()));
+            if (logbookEntry.getCarbs() >= 0) carbsET.setText(String.valueOf(logbookEntry.getCarbs()));
+            else carbsET.setText("");
             foodET = findViewById(R.id.food_edit_text);
             foodET.setText(String.valueOf(logbookEntry.getFood()));
             Button foodTemplateBtn = findViewById(R.id.food_template_button);
@@ -210,9 +216,24 @@ public class EditActivity extends AppCompatActivity {
 
             // exercise
             exerciseET = findViewById(R.id.exercise_edit_text);
-            exerciseET.setText(String.valueOf(logbookEntry.getExercise()));
+            if (logbookEntry.getExercise() >= 0) exerciseET.setText(String.valueOf(logbookEntry.getExercise()));
+            else exerciseET.setText("");
             intensitySlider = findViewById(R.id.intensity_slider);
             intensitySlider.setValue(logbookEntry.getIntensity());
+
+            // medical tests
+            hba1cET = findViewById(R.id.hba1c_edit_text);
+            if (logbookEntry.getHba1c() >= 0) hba1cET.setText(String.valueOf(logbookEntry.getHba1c()));
+            else hba1cET.setText("");
+            ketonesET = findViewById(R.id.ketones_edit_text);
+            if (logbookEntry.getKetones() >= 0) ketonesET.setText(String.valueOf(logbookEntry.getKetones()));
+            else ketonesET.setText("");
+            systolicET = findViewById(R.id.systolic_edit_text);
+            if (logbookEntry.getSystolic() >= 0) systolicET.setText(String.valueOf(logbookEntry.getSystolic()));
+            else systolicET.setText("");
+            diastolicET = findViewById(R.id.diastolic_edit_text);
+            if (logbookEntry.getDiastolic() >= 0) diastolicET.setText(String.valueOf(logbookEntry.getDiastolic()));
+            else diastolicET.setText("");
 
             // notes
             notesET = findViewById(R.id.notes_edit_text);
@@ -300,7 +321,7 @@ public class EditActivity extends AppCompatActivity {
         LogbookListFragment.vm.warn(code, arr[(int) Math.floor(Math.random() * arr.length)]);
 
         int notifID = 102;
-        String channelID = "com.example.diabuddy2021.warnings";
+        String channelID = "com.example.diabuddy.warnings";
         Context context = getApplicationContext();
         Intent i = new Intent(context, LoginActivity.class); // redirect to MessagesActivity after login
         i.putExtra("type", "warning"); // can give the same thing
@@ -445,12 +466,16 @@ public class EditActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if (readingET.getText().toString().isEmpty()) readingET.setText("0.0");
-        if (bolusET.getText().toString().isEmpty()) bolusET.setText("0.0");
-        if (corrET.getText().toString().isEmpty()) corrET.setText("0.0");
-        if (basalET.getText().toString().isEmpty()) basalET.setText("0.0");
-        if (carbsET.getText().toString().isEmpty()) carbsET.setText("0.0");
-        if (exerciseET.getText().toString().isEmpty()) exerciseET.setText("0.0");
+        if (readingET.getText().toString().isEmpty()) readingET.setText("-1.0");
+        if (bolusET.getText().toString().isEmpty()) bolusET.setText("-1.0");
+        if (corrET.getText().toString().isEmpty()) corrET.setText("-1.0");
+        if (basalET.getText().toString().isEmpty()) basalET.setText("-1.0");
+        if (carbsET.getText().toString().isEmpty()) carbsET.setText("-1.0");
+        if (exerciseET.getText().toString().isEmpty()) exerciseET.setText("-1.0");
+        if (hba1cET.getText().toString().isEmpty()) hba1cET.setText("-1.0");
+        if (ketonesET.getText().toString().isEmpty()) ketonesET.setText("-1.0");
+        if (systolicET.getText().toString().isEmpty()) systolicET.setText("-1.0");
+        if (diastolicET.getText().toString().isEmpty()) diastolicET.setText("-1.0");
 
         logbookEntry.setReading(Double.parseDouble(readingET.getText().toString()));
         logbookEntry.setBolus(Double.parseDouble(bolusET.getText().toString()));
@@ -460,6 +485,10 @@ public class EditActivity extends AppCompatActivity {
         logbookEntry.setFood(foodET.getText().toString());
         logbookEntry.setExercise(Integer.parseInt(exerciseET.getText().toString()));
         logbookEntry.setIntensity((int) intensitySlider.getValue());
+        logbookEntry.setHba1c(Double.parseDouble(hba1cET.getText().toString()));
+        logbookEntry.setKetones(Double.parseDouble(ketonesET.getText().toString()));
+        logbookEntry.setSystolic(Integer.parseInt(systolicET.getText().toString()));
+        logbookEntry.setDiastolic(Integer.parseInt(diastolicET.getText().toString()));
         logbookEntry.setNotes(notesET.getText().toString());
 
         if (LogbookListFragment.vm.getGlucoseUnit().equals(getResources().getString(R.string.mmol_l))) {

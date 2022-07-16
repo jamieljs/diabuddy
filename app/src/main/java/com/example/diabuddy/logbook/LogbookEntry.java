@@ -4,29 +4,33 @@ import java.util.Date;
 
 public class LogbookEntry implements Comparable<LogbookEntry> {
 
-    private int key; // for database
+    private String key; // for database
     private Date datetime = new Date();
-    private double reading = 0.0; // 0 when nothing was included, -1 if it is not an actual logbook entry (deleted, or placeholder for headers)
-    private double bolus = 0.0;
-    private double correction = 0.0;
-    private double basal = 0.0;
-    private double carbs = 0.0;
+    private double reading = -1;
+    private double bolus = -1;
+    private double correction = -1;
+    private double basal = -1;
+    private double carbs = -1;
     private String food = "";
-    private int exercise = 0; // minutes
-    private int intensity = 0; // 1 to 5 inclusive
+    private int exercise = -1; // minutes
+    private int intensity = -1; // 1 to 5 inclusive
+    private double hba1c = -1;
+    private double ketones = -1;
+    private int systolic = -1;
+    private int diastolic = -1;
     private String notes = ""; // e.g. hba1c
 
-    public LogbookEntry(int key) {
+    public LogbookEntry(String key) {
         this.key = key;
     }
 
     public LogbookEntry(Date datetime, double reading) {
-        this.key = -1;
+        this.key = "-";
         this.datetime = datetime;
         this.reading = reading;
     }
 
-    public LogbookEntry(int key, Date datetime, double reading, double bolus, double correction, double basal, double carbs, String food, int exercise, int intensity, String notes) {
+    public LogbookEntry(String key, Date datetime, double reading, double bolus, double correction, double basal, double carbs, String food, int exercise, int intensity, double hba1c, double ketones, int systolic, int diastolic, String notes) {
         this.key = key;
         this.datetime = datetime;
         this.reading = reading;
@@ -37,6 +41,10 @@ public class LogbookEntry implements Comparable<LogbookEntry> {
         this.food = food;
         this.exercise = exercise;
         this.intensity = intensity;
+        this.hba1c = hba1c;
+        this.ketones = ketones;
+        this.systolic = systolic;
+        this.diastolic = diastolic;
         this.notes = notes;
     }
 
@@ -59,7 +67,7 @@ public class LogbookEntry implements Comparable<LogbookEntry> {
         return -this.datetime.compareTo(o.datetime);
     }
 
-    public int getKey() {
+    public String getKey() {
         return key;
     }
 
@@ -140,6 +148,42 @@ public class LogbookEntry implements Comparable<LogbookEntry> {
     }
 
     public double getInsulin() {
-        return bolus + basal + correction;
+        int res = 0;
+        if (bolus > 0) res += bolus;
+        if (basal > 0) res += basal;
+        if (correction > 0) res += correction;
+        return res;
+    }
+
+    public double getHba1c() {
+        return hba1c;
+    }
+
+    public void setHba1c(double hba1c) {
+        this.hba1c = hba1c;
+    }
+
+    public double getKetones() {
+        return ketones;
+    }
+
+    public void setKetones(double ketones) {
+        this.ketones = ketones;
+    }
+
+    public int getSystolic() {
+        return systolic;
+    }
+
+    public void setSystolic(int systolic) {
+        this.systolic = systolic;
+    }
+
+    public int getDiastolic() {
+        return diastolic;
+    }
+
+    public void setDiastolic(int diastolic) {
+        this.diastolic = diastolic;
     }
 }

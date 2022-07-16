@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.diabuddy2021.R;
+import com.example.diabuddy.R;
 
 public class SiteRotationActivity extends AppCompatActivity implements SiteOverviewFragment.OnFragmentInteractionListener, SiteListFragment.OnFragmentInteractionListener {
 

@@ -109,6 +109,17 @@
             app:layout_constraintLeft_toRightOf="@id/food_image"
             app:layout_constraintStart_toEndOf="@id/food_image"/>
         <ImageView
+            android:id="@+id/medical_tests_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="6dp"
+            android:src="@drawable/round_medical_services_24"
+            app:tint="@color/translucent_black"
+            app:layout_constraintTop_toTopOf="@id/divider"
+            app:layout_constraintBottom_toBottomOf="@id/divider"
+            app:layout_constraintLeft_toRightOf="@id/exercise_image"
+            app:layout_constraintStart_toEndOf="@id/exercise_image"/>
+        <ImageView
             android:id="@+id/notes_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -117,8 +128,8 @@
             app:tint="@color/translucent_black"
             app:layout_constraintTop_toTopOf="@id/divider"
             app:layout_constraintBottom_toBottomOf="@id/divider"
-            app:layout_constraintLeft_toRightOf="@id/exercise_image"
-            app:layout_constraintStart_toEndOf="@id/exercise_image"/>
+            app:layout_constraintLeft_toRightOf="@id/medical_tests_image"
+            app:layout_constraintStart_toEndOf="@id/medical_tests_image"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

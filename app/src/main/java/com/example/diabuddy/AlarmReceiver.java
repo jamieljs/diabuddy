@@ -66,7 +66,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         });
 
         int notifID = 101;
-        String channelID = "com.example.diabuddy2021.reminders";
+        String channelID = "com.example.diabuddy.reminders";
         Intent i = new Intent(context, LoginActivity.class); // redirect to MessagesActivity after login
         i.putExtra("type", "reminder");
         PendingIntent pending = PendingIntent.getActivity(context, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);

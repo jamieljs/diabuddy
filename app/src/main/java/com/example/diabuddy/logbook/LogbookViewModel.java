@@ -1,5 +1,8 @@
 package com.example.diabuddy.logbook;
 
+import android.util.Log;
+import android.util.Pair;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
@@ -7,28 +10,48 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.diabuddy.foodtemplate.FoodItem;
 import com.example.diabuddy.foodtemplate.Meal;
+import com.example.diabuddy.messages.MessagesViewModel;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class LogbookViewModel extends ViewModel {
     private final CollectionReference logbookDB = FirebaseFirestore.getInstance().collection("users")
             .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("logbook");
     private final DocumentReference settingsDB = FirebaseFirestore.getInstance().collection("users")
+            .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
+    private final CollectionReference messagesDB = FirebaseFirestore.getInstance().collection("users")
+            .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("messages");
+    private final CollectionReference templateDB = FirebaseFirestore.getInstance().collection("users")
+            .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("template");
+    private final DocumentReference challengeDB = FirebaseFirestore.getInstance().collection("users")
             .document(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
     private MutableLiveData<ArrayList<LogbookEntry>> logbookEntries = new MutableLiveData<>(new ArrayList<>());
@@ -51,11 +74,20 @@ public class LogbookViewModel extends ViewModel {
     private final String NOTES_KEY = "notes"; // USED IN MULTIPLE PLACES (logbook and challenges)
     private final String NAME_KEY = "name";
     private final String LIST_KEY = "list";
-    private final String SEVENTY_KEY = "70";
-    private final String EIGHTY_KEY = "80";
-    private final String NINETY_KEY = "90";
-    private final String HUNDRED_KEY = "100";
+    private final String SEVENTY_KEY = "challenges-70";
+    private final String EIGHTY_KEY = "challenges-80";
+    private final String NINETY_KEY = "challenges-90";
+    private final String HUNDRED_KEY = "challenges-100";
+    private final String NOTES_CHALLENGE_KEY = "challenges-notes";
     private final String WARNED_FREQ_KEY = "warnedFreq";
+    private final String MESSAGES_KEY = "messages";
+    private final String GROUPS_KEY = "groups";
+    private final String GROUP_KEY = "group";
+    private final String CONTENT_KEY = "content";
+    private final String TYPE_KEY = "type";
+    private final String INDEX_KEY = "index";
+    private final String ONE_FOOD_KEY = "food";
+    private final String VARIABLES_KEY = "variables";
 
     private MutableLiveData<Double> lowerBound = new MutableLiveData<>();
     private MutableLiveData<Double> upperBound = new MutableLiveData<>();
@@ -64,6 +96,8 @@ public class LogbookViewModel extends ViewModel {
     private SimpleDateFormat gmtFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm"); // set in the constructor
     private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd/MM/yyyy");
     private boolean warnedFreq = false;
+    private int size = 0;
+    private Date curDate = new Date();
 
     public LogbookViewModel() {
         gmtFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -90,156 +124,217 @@ public class LogbookViewModel extends ViewModel {
             }
         });
 
-
-        ValueEventListener logbookListener = new ValueEventListener() {
+        logbookDB.document(VARIABLES_KEY).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int size = snapshot.child(SIZE_KEY).getValue(Integer.class);
-                if (logbookSize != size) logbookSize = size;
-                if (snapshot.hasChild(WARNED_FREQ_KEY)) warnedFreq = snapshot.child(WARNED_FREQ_KEY).getValue(Boolean.class);
-                loadLogbook(snapshot, size);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    warnedFreq = (boolean) task.getResult().get(WARNED_FREQ_KEY);
+                    size = (int) task.getResult().get(SIZE_KEY);
+                }
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) { }
-        };
-        dbLogbook.addListenerForSingleValueEvent(logbookListener);
-        dbLogbook.addValueEventListener(logbookListener);
-
-        ValueEventListener foodListener = new ValueEventListener() {
+        });
+        logbookDB.document(VARIABLES_KEY).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<FoodItem> list = new ArrayList<>();
-                if (snapshot.hasChild((foodItems.getValue().size() - 1) + "") && !snapshot.child((foodItems.getValue().size() - 1) + "").hasChild(CARBS_KEY)) {
-                    return;
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error == null && value != null && value.exists()) {
+                    warnedFreq = (boolean) value.get(WARNED_FREQ_KEY);
+                    size = (int) value.get(SIZE_KEY);
                 }
-                int i = 0;
-                while (snapshot.hasChild(i + "") && snapshot.child(i + "").hasChild(CARBS_KEY)) {
-                    list.add(new FoodItem(i, snapshot.child(i + "").child(NAME_KEY).getValue(String.class), snapshot.child(i + "").child(CARBS_KEY).getValue(Double.class)));
-                    i++;
-                }
-                Collections.sort(list);
-                foodItems.setValue(list);
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        };
-        dbFoodItems.addListenerForSingleValueEvent(foodListener);
-        dbFoodItems.addValueEventListener(foodListener);
+        });
 
-        ValueEventListener mealListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Meal> list = new ArrayList<>();
-                if (snapshot.hasChild((meals.getValue().size() - 1) + "") && !snapshot.child((meals.getValue().size() - 1) + "").hasChild(LIST_KEY)) {
-                    return;
-                }
-                int i = 0;
-                while (snapshot.hasChild(i + "") && snapshot.child(i + "").hasChild(LIST_KEY)) {
-                    String raw = snapshot.child(i + "").child(LIST_KEY).getValue(String.class);
-                    String[] tokens = raw.split(",");
-                    ArrayList<Integer> arr = new ArrayList<>();
-                    for (String s : tokens) arr.add(Integer.parseInt(s));
-                    list.add(new Meal(i, snapshot.child(i + "").child(NAME_KEY).getValue(String.class), indexToItem(arr)));
-                    i++;
-                }
-                Collections.sort(list);
-                meals.setValue(list);
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        };
-        dbMeals.addListenerForSingleValueEvent(mealListener);
-        dbMeals.addValueEventListener(mealListener);
-    }
+        logbookDB.whereGreaterThanOrEqualTo(DATE_KEY, startOfDay(new Date()))
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        ArrayList<LogbookEntry> arr = new ArrayList<>();
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                arr.add(document.toObject(LogbookEntry.class));
+                            }
+                        }
+                        logbookEntries.setValue(arr);
+                    }
+                });
 
-    private void loadLogbook(DataSnapshot snapshot, int size) {
-        ArrayList<LogbookEntry> arr = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            if (snapshot.hasChild(i + "")) {
-                DataSnapshot cur = snapshot.child(i + "");
-                if (cur.hasChild(NOTES_KEY)) {
-                    String date = cur.child(DATE_KEY).getValue(String.class);
-                    double reading = cur.child(READING_KEY).getValue(Double.class);
-                    double bolus = cur.child(BOLUS_KEY).getValue(Double.class);
-                    double correction = cur.child(CORRECTION_KEY).getValue(Double.class);
-                    double basal = cur.child(BASAL_KEY).getValue(Double.class);
-                    double carbs = cur.child(CARBS_KEY).getValue(Double.class);
-                    String food = cur.child(FOOD_KEY).getValue(String.class);
-                    int exercise = cur.child(EXERCISE_KEY).getValue(Integer.class);
-                    int intensity = cur.child(INTENSITY_KEY).getValue(Integer.class);
-                    String notes = cur.child(NOTES_KEY).getValue(String.class);
+        templateDB.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                ArrayList<FoodItem> foodList = new ArrayList<>();
+                ArrayList<Meal> mealList = new ArrayList<>();
+                if (task.isSuccessful()) {
                     try {
-                        Date localDate = gmtFormatter.parse(date);
-                        arr.add(new LogbookEntry(i, localDate, reading, bolus, correction, basal, carbs, food, exercise, intensity, notes));
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            int i = (Integer) document.getData().get(INDEX_KEY);
+                            String name = (String) document.getData().get(NAME_KEY);
+                            if (document.getId().contains(ONE_FOOD_KEY)) {
+                                double carbs = (Double) document.getData().get(CARBS_KEY);
+                                foodList.add(new FoodItem(i, name, carbs));
+                            } else {
+                                List<Integer> arr = (List<Integer>) document.getData().get(LIST_KEY);
+                                mealList.add(new Meal(i, name, indexToItem(arr)));
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e("LogbookViewModel", e.getMessage());
                     }
                 }
+                Collections.sort(foodList);
+                Collections.sort(mealList);
+                foodItems.setValue(foodList);
+                meals.setValue(mealList);
             }
-        }
-        logbookEntries.setValue(arr);
+        });
+        templateDB.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                ArrayList<FoodItem> foodList = new ArrayList<>();
+                ArrayList<Meal> mealList = new ArrayList<>();
+                if (e == null) {
+                    try {
+                        for (QueryDocumentSnapshot document : value) {
+                            int i = (Integer) document.getData().get(INDEX_KEY);
+                            String name = (String) document.getData().get(NAME_KEY);
+                            if (document.getId().contains(ONE_FOOD_KEY)) {
+                                double carbs = (Double) document.getData().get(CARBS_KEY);
+                                foodList.add(new FoodItem(i, name, carbs));
+                            } else {
+                                List<Integer> arr = (List<Integer>) document.getData().get(LIST_KEY);
+                                mealList.add(new Meal(i, name, indexToItem(arr)));
+                            }
+                        }
+                    } catch (Exception ex) {
+                        Log.e("PageViewModel", ex.getMessage());
+                    }
+                }
+                Collections.sort(foodList);
+                Collections.sort(mealList);
+                foodItems.setValue(foodList);
+                meals.setValue(mealList);
+            }
+        });
 
-        int chalCount[] = {0, 0, 0, 0, 0}; // 70, 80, 90, 100, notes
-        int start = 0;
-        for (int i = 0; i < arr.size(); i++) {
-            if (i < arr.size() - 1 && !dateOnlyFormat.format(arr.get(i).getDatetime()).equals(dateOnlyFormat.format(arr.get(i + 1).getDatetime()))) { // different date
-                int inRange = 0, total = 0, notes = 0;
-                for (int j = start; j <= i; j++) {
-                    double reading = arr.get(j).getReading();
-                    if (reading > 0) {
-                        total++;
-                        if (reading >= lowerBound.getValue() && reading <= upperBound.getValue()) inRange++;
-                    }
-                    if (!arr.get(j).getNotes().equals("")) notes++;
-                }
-                double frac = (double) inRange / (double) total;
-                if (frac >= 0.7 && frac < 0.8) chalCount[0]++;
-                else if (frac >= 0.8 && frac < 0.9) chalCount[1]++;
-                else if (frac >= 0.9 && frac < 1.0) chalCount[2]++;
-                else if (frac == 1.0) chalCount[3]++;
-                if (notes == i - start + 1) chalCount[4]++;
-                start = i + 1;
-            }
-        }
-        dbChallenges.child(SEVENTY_KEY).setValue(chalCount[0]);
-        dbChallenges.child(EIGHTY_KEY).setValue(chalCount[1]);
-        dbChallenges.child(NINETY_KEY).setValue(chalCount[2]);
-        dbChallenges.child(HUNDRED_KEY).setValue(chalCount[3]);
-        dbChallenges.child(NOTES_KEY).setValue(chalCount[4]);
+        curDate = startOfDay(new Date());
+
     }
 
-    public int createNewEntry() { // return the key of the new entry
-        int key = logbookSize;
+    public int loadNextPage() {
+        if (curDate.before(new Date(1))) return -1;
+        Date prvDate = curDate;
+        logbookDB.whereLessThan(DATE_KEY, curDate)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult().isEmpty()) {
+                                curDate = new Date(0);
+                            } else {
+                                for (QueryDocumentSnapshot doc : task.getResult()) {
+                                    Date date = (Date) doc.getData().get(DATE_KEY);
+                                    if (curDate.after(date)) {
+                                        curDate = date;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+        if (curDate.before(new Date(1))) return -1;
+
+
+        ArrayList<LogbookEntry> list = new ArrayList<>();
+
+        logbookDB.whereGreaterThanOrEqualTo(DATE_KEY, curDate)
+                .whereLessThanOrEqualTo(DATE_KEY, prvDate)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                list.add(doc.toObject(LogbookEntry.class));
+                            }
+                        }
+
+                    }
+                });
+        int ret = list.size();
+        list.addAll(logbookEntries.getValue());
+        Collections.sort(list);
+        logbookEntries.setValue(list);
+        return ret;
+    }
+
+    public String createNewEntry() { // return the key of the new entry
+        String key = size + "";
         LogbookEntry cur = new LogbookEntry(key);
         saveEdits(cur);
-        dbLogbook.child(SIZE_KEY).setValue(key + 1);
-        dbLogbook.child(WARNED_FREQ_KEY).setValue(false);
+        Map<String, Object> map = new HashMap<>();
+        map.put(SIZE_KEY, size+1);
+        map.put(WARNED_FREQ_KEY,false);
+        logbookDB.document(VARIABLES_KEY).set(map);
         return key;
     }
 
     public void saveEdits(LogbookEntry logbookEntry) {
-        int key = logbookEntry.getKey();
-        DatabaseReference cur = dbLogbook.child(key + "");
-        cur.child(DATE_KEY).setValue(gmtFormatter.format(logbookEntry.getDatetime()));
-        cur.child(READING_KEY).setValue(logbookEntry.getReading());
-        cur.child(BOLUS_KEY).setValue(logbookEntry.getBolus());
-        cur.child(CORRECTION_KEY).setValue(logbookEntry.getCorrection());
-        cur.child(BASAL_KEY).setValue(logbookEntry.getBasal());
-        cur.child(CARBS_KEY).setValue(logbookEntry.getCarbs());
-        cur.child(FOOD_KEY).setValue(logbookEntry.getFood());
-        cur.child(EXERCISE_KEY).setValue(logbookEntry.getExercise());
-        cur.child(INTENSITY_KEY).setValue(logbookEntry.getIntensity());
-        cur.child(NOTES_KEY).setValue(logbookEntry.getNotes());
+        String key = logbookEntry.getKey();
+        logbookDB.document(key).set(logbookEntry);
+        updateChallenge(logbookEntry.getDatetime());
     }
 
-    public LogbookEntry getEntry(int key) {
-        for (LogbookEntry l : logbookEntries.getValue()) {
-            if (l.getKey() == key) return l;
+    public LogbookEntry getEntry(String key) {
+        ArrayList<LogbookEntry> list = new ArrayList<>();
+        try {
+            DocumentReference docRef = logbookDB.document(key);
+            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    list.add(documentSnapshot.toObject(LogbookEntry.class));
+                }
+            });
+        } catch (Exception e) {
+            Log.e("LogbookViewModel", e.getMessage());
         }
+        if (list.size() > 0) return list.get(0);
         return null;
     }
 
-    public void deleteEntry(int key) {
-        dbLogbook.child(key + "").removeValue();
+    private void updateChallenge(Date date) {
+        challengeDB.update(SEVENTY_KEY, FieldValue.arrayRemove(date));
+        challengeDB.update(EIGHTY_KEY, FieldValue.arrayRemove(date));
+        challengeDB.update(NINETY_KEY, FieldValue.arrayRemove(date));
+        challengeDB.update(HUNDRED_KEY, FieldValue.arrayRemove(date));
+        challengeDB.update(NOTES_CHALLENGE_KEY, FieldValue.arrayRemove(date));
+
+        logbookDB.whereGreaterThanOrEqualTo(DATE_KEY, startOfDay(date))
+                .whereLessThanOrEqualTo(DATE_KEY, endOfDay(date))
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            int inRange = 0, total = 0, notes = 0;
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                double reading = document.getDouble(READING_KEY);
+                                if (reading > 0) {
+                                    total++;
+                                    if (reading >= lowerBound.getValue() && reading <= upperBound.getValue()) inRange++;
+                                }
+                                if (!((String) document.get(NOTES_KEY)).equals("")) notes++;
+                            }
+                            double frac = (double) inRange / (double) total;
+                            if (frac >= 0.7 && frac < 0.8) challengeDB.update(SEVENTY_KEY, FieldValue.arrayUnion(date));
+                            else if (frac >= 0.8 && frac < 0.9) challengeDB.update(EIGHTY_KEY, FieldValue.arrayUnion(date));
+                            else if (frac >= 0.9 && frac < 1.0) challengeDB.update(NINETY_KEY, FieldValue.arrayUnion(date));
+                            else if (frac == 1.0) challengeDB.update(HUNDRED_KEY, FieldValue.arrayUnion(date));
+                            if (notes == task.getResult().size()) challengeDB.update(NOTES_CHALLENGE_KEY, FieldValue.arrayUnion(date));
+                        }
+                    }
+                });
+    }
+
+    public void deleteEntry(String key) {
+        logbookDB.document(key).delete();
     }
 
     public MutableLiveData<ArrayList<LogbookEntry>> getLogbookEntries() { return logbookEntries; }
@@ -259,28 +354,71 @@ public class LogbookViewModel extends ViewModel {
     }
 
     public void warn(int code, String s) {
-        dbLogbook.child(WARNED_FREQ_KEY).setValue(true);
-        ValueEventListener listener = new ValueEventListener() {
+        Map<String, Object> map = new HashMap<>();
+        map.put(WARNED_FREQ_KEY, true);
+        logbookDB.document(WARNED_FREQ_KEY).update(map);
+
+        messagesDB.document(MESSAGES_KEY).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                int size = snapshot.child("size").getValue(Integer.class);
-                dbMessages.child(size + "").child("type").setValue(code);
-                dbMessages.child(size + "").child("content").setValue(s);
-                dbMessages.child("size").setValue(size + 1);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    try {
+                        List<DocumentReference> groups = (List<DocumentReference>) task.getResult().get(GROUPS_KEY);
+                        int index = groups.size()-1;
+                        DocumentReference lastGroup = groups.get(index);
+                        lastGroup.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentSnapshot> task1) {
+                                if (task1.isSuccessful()) {
+                                    List<Integer> typeList = (List<Integer>) task1.getResult().get(TYPE_KEY);
+                                    if (typeList.size() == MessagesViewModel.GROUP_SIZE) {
+                                        DocumentReference ref = addMessageToGroup(code, s, index+1);
+                                        messagesDB.document(MESSAGES_KEY).update(GROUPS_KEY, FieldValue.arrayUnion(ref));
+                                    } else {
+                                        addMessageToGroup(code, s, index);
+                                    }
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        Log.e("MessagesViewModel", e.getMessage());
+                    }
+                }
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) { }
-        };
-        dbMessages.addListenerForSingleValueEvent(listener);
+        });
     }
 
-    protected ArrayList<FoodItem> indexToItem(ArrayList<Integer> list) {
+    private DocumentReference addMessageToGroup(int type, String msg, int group) {
+        messagesDB.document(GROUP_KEY + group).update(CONTENT_KEY, FieldValue.arrayUnion(msg));
+        messagesDB.document(GROUP_KEY + group).update(TYPE_KEY, FieldValue.arrayUnion(type));
+        return messagesDB.document(GROUP_KEY + group);
+    }
+
+    protected ArrayList<FoodItem> indexToItem(List<Integer> list) {
         ArrayList<FoodItem> ans = new ArrayList<>();
         for (Integer i : list) ans.add(foodItems.getValue().get(i));
         return ans;
     }
 
+    protected List<Integer> itemToIndex(ArrayList<FoodItem> list) {
+        List<Integer> ans = Arrays.asList();
+        for (FoodItem f : list) ans.add(f.getId());
+        return ans;
+    }
+
     public boolean isWarnedFreq() {
         return warnedFreq;
+    }
+
+    private Date startOfDay(Date date) {
+        ZonedDateTime dayInZone = date.toInstant().atZone(ZoneId.systemDefault());
+        LocalDateTime startOfDay = dayInZone.toLocalDate().atStartOfDay();
+        return Date.from(startOfDay.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private Date endOfDay(Date date) {
+        ZonedDateTime dayInZone = date.toInstant().atZone(ZoneId.systemDefault());
+        LocalDateTime endOfDay = dayInZone.toLocalDate().atTime(LocalTime.MAX);
+        return Date.from(endOfDay.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

@@ -27,8 +27,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.diabuddy2021.R;
-import com.example.diabuddy2021.foodtemplate.FoodTemplateActivity;
+import com.example.diabuddy.R;
+import com.example.diabuddy.foodtemplate.FoodTemplateActivity;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -25,11 +26,13 @@ import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.diabuddy.LoginActivity;
 import com.example.diabuddy.R;
 import com.example.diabuddy.UserActivity;
+import com.example.diabuddy.messages.MessagesActivity;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -59,6 +62,8 @@ public class LogbookListFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
+    private ProgressBar loadingPB;
+    private NestedScrollView nestedSV;
     private ArrayList<LogbookEntry> allLogbookEntries = new ArrayList<>();
     private ArrayList<LogbookEntry> logbookEntries = new ArrayList<>();
     private SimpleDateFormat dateOnlyFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -66,7 +71,7 @@ public class LogbookListFragment extends Fragment {
     private View root;
 
     private ChipGroup chipGroup;
-    private Chip readingChip, insulinChip, foodChip, exerciseChip, notesChip;
+    private Chip readingChip, insulinChip, foodChip, exerciseChip, medicalTestsChip, notesChip;
     private String notesQueryText = "";
 
     @Override
@@ -90,8 +95,26 @@ public class LogbookListFragment extends Fragment {
         empty = root.findViewById(R.id.logbook_empty);
         empty.setVisibility(View.GONE);
 
+        loadingPB = root.findViewById(R.id.logbook_progressbar);
+        nestedSV = root.findViewById(R.id.logbook_nestedSV);
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+                    loadingPB.setVisibility(View.VISIBLE);
+                    if (vm.loadNextPage() != -1) {
+                        loadingPB.setVisibility(View.GONE);
+                        // recyclerView.scrollToPosition();
+                    } else {
+                        loadingPB.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
         recyclerView = root.findViewById(R.id.logbook_recycler_view);
-        layoutManager = new LinearLayoutManager(getContext());
+        nestedSV.setVisibility(View.GONE);
+        layoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(layoutManager);
         adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
@@ -110,6 +133,7 @@ public class LogbookListFragment extends Fragment {
         insulinChip = root.findViewById(R.id.insulin_chip);
         foodChip = root.findViewById(R.id.food_chip);
         exerciseChip = root.findViewById(R.id.exercise_chip);
+        medicalTestsChip = root.findViewById(R.id.medical_tests_chip);
         notesChip = root.findViewById(R.id.notes_chip);
         notesQueryText = "";
 
@@ -175,6 +199,12 @@ public class LogbookListFragment extends Fragment {
             }
         });
         exerciseChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                filterEntries();
+            }
+        });
+        medicalTestsChip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 filterEntries();
@@ -368,8 +398,9 @@ public class LogbookListFragment extends Fragment {
         boolean insulin = insulinChip.isChecked();
         boolean food = foodChip.isChecked();
         boolean exercise = exerciseChip.isChecked();
+        boolean medicalTests = medicalTestsChip.isChecked();
         boolean notes = notesChip.isChecked();
-        if (!reading && !insulin && !food && !exercise && !notes) {
+        if (!reading && !insulin && !food && !exercise && !medicalTests && !notes) {
             logbookEntries.clear();
             logbookEntries.add(new LogbookEntry(allLogbookEntries.get(0).getDatetime(), -1)); // header
             for (int i = 0; i < allLogbookEntries.size(); i++) {
@@ -387,6 +418,7 @@ public class LogbookListFragment extends Fragment {
                 else if (insulin && l.getInsulin() <= 0) possible = false;
                 else if (food && l.getCarbs() <= 0 && l.getFood().equals("")) possible = false;
                 else if (exercise && l.getExercise() <= 0) possible = false;
+                else if (medicalTests && (l.getHba1c() <= 0 && l.getKetones() <= 0 && l.getSystolic() <= 0 && l.getDiastolic() <= 0)) possible = false;
                 else if (notes && !l.getNotes().toLowerCase().contains(notesQueryText)) possible = false;
                 if (possible) filtered.add(l);
                 System.out.println(possible + " " + l.getNotes().toLowerCase() + " " + notesQueryText);
@@ -413,7 +445,7 @@ public class LogbookListFragment extends Fragment {
 
 
     private void editEntry(int index, View view) {
-        int key = -1;
+        String key = "";
         if (index == logbookEntries.size()) {
             key = vm.createNewEntry();
         } else {
@@ -429,7 +461,7 @@ public class LogbookListFragment extends Fragment {
         LogbookListFragment.vm.warn(code, arr[0]); // only one element in each array for now
 
         int notifID = 102;
-        String channelID = "com.example.diabuddy2021.warnings";
+        String channelID = "com.example.diabuddy.warnings";
         Context context = requireActivity().getApplicationContext();
         Intent i = new Intent(context, LoginActivity.class); // redirect to MessagesActivity after login
         i.putExtra("type", "warning");

@@ -27,8 +27,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.diabuddy2021.R;
-import com.example.diabuddy2021.logbook.LogbookEntry;
+import com.example.diabuddy.R;
+import com.example.diabuddy.logbook.LogbookEntry;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -50,18 +50,17 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.TimeZone;
 
 public class TrendsFragment extends Fragment {
 
     private View root;
-    private ConstraintLayout printArea;
+    private ConstraintLayout page;
     private TextView averageTV, rangeTV, insulinDayTV, insulinKiloTV, carbsTV, exerciseTV, hba1cTV;
     private CardView averageCV, hba1cCV;
     private ProgressBar inRangePB, hypoPB, hyperPB;
     private TextView inRangeTV, hypoTV, hyperTV;
-    private ImageView scatterIV;
     private LineChart chart;
+    private ProgressBar loadingPB;
 
     private int red, yellow, tealEL, gray;
     private TypedValue typedValue = new TypedValue();
@@ -92,12 +91,15 @@ public class TrendsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_trends, container, false);
+        page = root.findViewById(R.id.info_layout);
+        loadingPB = root.findViewById(R.id.trends_progressbar);
+
         red = getResources().getColor(R.color.red, getContext().getTheme());
         yellow = getResources().getColor(R.color.yellow, getContext().getTheme());
         tealEL = getResources().getColor(R.color.teal_extra_light, getContext().getTheme());
         gray = getResources().getColor(R.color.light_gray, getContext().getTheme());
 
-        requireContext().getTheme().resolveAttribute(R.attr.colorOnBackground, typedValue, true);
+        requireContext().getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnBackground, typedValue, true);
         View divider = root.findViewById(R.id.divider), divider2 = root.findViewById(R.id.divider_2);
         divider.setBackgroundColor(typedValue.data);
         divider2.setBackgroundColor(typedValue.data);
@@ -232,15 +234,11 @@ public class TrendsFragment extends Fragment {
     }
 
     private void updateViews() {
+        page.setVisibility(View.GONE);
+        loadingPB.setVisibility(View.VISIBLE);
+
         ArrayList<LogbookEntry> logbookEntries = vm.getEntries(startDate, endDate);
-        try {
-            String dateOnly = dateFormatter.format(startDate);
-            startDate = formatter.parse(dateOnly + " 00:00");
-            dateOnly = dateFormatter.format(endDate);
-            endDate = formatter.parse(dateOnly + " 00:00");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+
         int days = (int) (ChronoUnit.DAYS.between(startDate.toInstant(), endDate.toInstant())) + 1;
 
         double totalReading = 0.0, minReading = 1000000, maxReading = 0;
@@ -432,6 +430,9 @@ public class TrendsFragment extends Fragment {
 
         chart.setData(new LineData(dataSets));
         chart.invalidate();
+
+        page.setVisibility(View.VISIBLE);
+        loadingPB.setVisibility(View.GONE);
     }
 
     private static class MyValueFormatter extends ValueFormatter {

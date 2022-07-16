@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.diabuddy.onboarding.OnboardingActivity;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
@@ -21,10 +20,6 @@ import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -40,17 +35,14 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.EventListener;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 
@@ -87,7 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                         .setSupported(true)
                         // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.default_web_client_id))
+                        .setServerClientId(getString(R.string.default_web_client_id))//"842580619129-9mpa6ut2qdk332tjlb0fm07um6khd4vj.apps.googleusercontent.com")//
                         // Only show accounts previously used to sign in. (don't)
                         .setFilterByAuthorizedAccounts(false)
                         .build())
@@ -123,10 +115,15 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQ_ONE_TAP) {
+            Log.i("LoginActivity", "hi");
             try {
+                Log.i("LoginActivity", "hi");
                 SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
+                Log.i("LoginActivity", "hi");
                 String idToken = credential.getGoogleIdToken();
+                Log.i("LoginActivity", "hi");
                 if (idToken !=  null) {
+                    Log.i("LoginActivity", "hi");
                     // Got an ID token from Google. Use it to authenticate with your backend.
                     Log.d(TAG, "Got ID token.");
                     AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
@@ -134,6 +131,8 @@ public class LoginActivity extends AppCompatActivity {
                             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
+                                    Log.i("LoginActivity","signinlistener");
+
                                     if (task.isSuccessful()) {
                                         // Sign in success, update UI with the signed-in user's information
                                         Log.d(TAG, "signInWithCredential:success");
@@ -207,21 +206,23 @@ public class LoginActivity extends AppCompatActivity {
 
     private void login(FirebaseUser user) {
         if (user == null) return;
+        Log.i("LoginActivity", "login");
         load();
 
         String uid = user.getUid();
 
         final DocumentReference docRef = db.collection("users").document(uid);
-        docRef.addSnapshotListener(new EventListener() {
+        Log.i("LoginActivity", "docref created");
+
+        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
                     return;
                 }
 
-                if (snapshot != null && snapshot.exists()) {
+                if (value != null && value.exists()) {
                     if (type != null && type.equals("reminder")) {
                         NotificationManager nm = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
                         nm.cancelAll();
@@ -245,7 +246,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 
     private void load() {
@@ -261,6 +261,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void createNewUser(String uid) { // create the necessary paths
+        Log.i("LoginActivity", "newuser");
+
         // Create a new user with a first and last name
         Map<String, Object> user = new HashMap<>();
         user.put("bgUnit", "mmol/L");
@@ -292,9 +294,9 @@ public class LoginActivity extends AppCompatActivity {
         messageGroups.put("groups", Arrays.asList(firstGroupDocRef));
         db.collection("messages").document("messages").set(messageGroups);
 
-        /*
-        TODO?
-        siterotation inProgress = 0
-         */
+        // logbook warning
+        Map<String, Object> map = new HashMap<>();
+        map.put("warnedFreq", false);
+        db.collection("logbook").document("warnedFreq").update(map);
     }
 }

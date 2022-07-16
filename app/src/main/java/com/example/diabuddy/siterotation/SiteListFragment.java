@@ -59,7 +59,7 @@ public class SiteListFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
-    private ArrayList<Pair<Pair<String, Boolean>,Integer>> siteList = new ArrayList<>();
+    private ArrayList<SiteViewModel.Site> siteList = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -139,11 +139,11 @@ public class SiteListFragment extends Fragment {
             }
         });
 
-        final Observer<ArrayList<Pair<Pair<String, Boolean>,Integer>>> siteObserver = new Observer<ArrayList<Pair<Pair<String, Boolean>,Integer>>>() {
+        final Observer<ArrayList<SiteViewModel.Site>> siteObserver = new Observer<ArrayList<SiteViewModel.Site>>() {
             @Override
-            public void onChanged(ArrayList<Pair<Pair<String, Boolean>,Integer>> pairs) {
+            public void onChanged(ArrayList<SiteViewModel.Site> sites) {
                 siteList.clear();
-                siteList.addAll(pairs);
+                siteList.addAll(sites);
 
                 adapter.notifyDataSetChanged();
                 if (siteList.isEmpty()) {
@@ -302,18 +302,18 @@ public class SiteListFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
             ViewHolder holder = (ViewHolder) viewHolder;
             if (siteList.size() > position) {
-                holder.checkBox.setText(siteList.get(holder.getAdapterPosition()).first.first);
+                holder.checkBox.setText(siteList.get(holder.getAdapterPosition()).getName());
                 holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if (isChecked != siteList.get(holder.getAdapterPosition()).first.second) handleMarkOne(siteList.get(holder.getAdapterPosition()).second, isChecked);
+                        if (isChecked != siteList.get(holder.getAdapterPosition()).getUsed()) handleMarkOne(siteList.get(holder.getAdapterPosition()).getId(), isChecked);
                     }
                 });
-                holder.checkBox.setChecked(siteList.get(holder.getAdapterPosition()).first.second);
+                holder.checkBox.setChecked(siteList.get(holder.getAdapterPosition()).getUsed());
                 holder.delBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        handleDeleteOne(siteList.get(holder.getAdapterPosition()).second);
+                        handleDeleteOne(siteList.get(holder.getAdapterPosition()).getId());
                     }
                 });
             }

@@ -399,6 +399,114 @@
                 app:layout_constraintTop_toBottomOf="@id/logbook_edit_exercise" />
 
             <ImageView
+                android:id="@+id/medical_services_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:src="@drawable/round_medical_services_24"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_hba1c"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_hba1c"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_hba1c"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_hba1c"
+                app:tint="?attr/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_hba1c"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/fab_margin"
+                app:layout_constraintEnd_toEndOf="@id/logbook_edit_carbs"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_carbs"
+                app:layout_constraintRight_toRightOf="@id/logbook_edit_carbs"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_carbs"
+                app:layout_constraintTop_toBottomOf="@id/intensity_tv">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/hba1c_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hba1c"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_ketones"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@id/logbook_edit_carbs"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_carbs"
+                app:layout_constraintRight_toRightOf="@id/logbook_edit_carbs"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_carbs"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_hba1c">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/ketones_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/ketones"
+                    android:inputType="numberDecimal"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/bp_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/blood_pressure"
+                app:layout_constraintBottom_toBottomOf="@id/logbook_edit_systolic"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_systolic"
+                app:layout_constraintLeft_toLeftOf="@id/logbook_edit_carbs"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_systolic"
+                app:layout_constraintStart_toStartOf="@id/logbook_edit_carbs"
+                app:layout_constraintTop_toTopOf="@id/logbook_edit_systolic" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_systolic"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                app:layout_constraintEnd_toStartOf="@id/logbook_edit_diastolic"
+                app:layout_constraintLeft_toRightOf="@id/bp_tv"
+                app:layout_constraintRight_toLeftOf="@id/logbook_edit_diastolic"
+                app:layout_constraintStart_toEndOf="@id/bp_tv"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_ketones">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/systolic_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/systolic"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/logbook_edit_diastolic"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@id/logbook_edit_carbs"
+                app:layout_constraintLeft_toRightOf="@id/logbook_edit_systolic"
+                app:layout_constraintRight_toRightOf="@id/logbook_edit_carbs"
+                app:layout_constraintStart_toEndOf="@id/logbook_edit_systolic"
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_ketones">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/diastolic_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/diastolic"
+                    android:inputType="number"
+                    android:selectAllOnFocus="true" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
                 android:id="@+id/notes_icon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
@@ -425,13 +533,13 @@
                 app:layout_constraintStart_toStartOf="@id/logbook_edit_date"
                 app:layout_constraintRight_toLeftOf="@id/notes_stt"
                 app:layout_constraintEnd_toStartOf="@id/notes_stt"
-                app:layout_constraintTop_toBottomOf="@id/intensity_tv">
+                app:layout_constraintTop_toBottomOf="@id/logbook_edit_diastolic">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/notes_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/notes_e_g_hba1c"
+                    android:hint="@string/notes_e_g"
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
