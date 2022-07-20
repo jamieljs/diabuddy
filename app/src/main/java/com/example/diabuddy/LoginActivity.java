@@ -20,6 +20,10 @@ import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,13 +53,13 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "GoogleActivity";
-    private static final int REQ_ONE_TAP = 9001;
+    private static final int RC_SIGN_IN = 9001;
     private static final int RC_SIGN_OUT = 9002;
 
     private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
+
     private FirebaseFirestore db;
-    private SignInClient oneTapClient;
-    private BeginSignInRequest signInRequest;
 
     private String type = null;
 
@@ -74,18 +78,12 @@ public class LoginActivity extends AppCompatActivity {
             type = extras.getString("type");
         }
 
-        oneTapClient = Identity.getSignInClient(this);
-        signInRequest = BeginSignInRequest.builder()
-                .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
-                        .setSupported(true)
-                        // Your server's client ID, not your Android client ID.
-                        .setServerClientId(getString(R.string.default_web_client_id))//"842580619129-9mpa6ut2qdk332tjlb0fm07um6khd4vj.apps.googleusercontent.com")//
-                        // Only show accounts previously used to sign in. (don't)
-                        .setFilterByAuthorizedAccounts(false)
-                        .build())
-                // Automatically sign in when exactly one credential is retrieved.
-                .setAutoSelectEnabled(true)
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
                 .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -114,99 +112,68 @@ public class LoginActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQ_ONE_TAP) {
-            Log.i("LoginActivity", "hi");
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                Log.i("LoginActivity", "hi");
-                SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
-                Log.i("LoginActivity", "hi");
-                String idToken = credential.getGoogleIdToken();
-                Log.i("LoginActivity", "hi");
-                if (idToken !=  null) {
-                    Log.i("LoginActivity", "hi");
-                    // Got an ID token from Google. Use it to authenticate with your backend.
-                    Log.d(TAG, "Got ID token.");
-                    AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
-                    mAuth.signInWithCredential(firebaseCredential)
-                            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    Log.i("LoginActivity","signinlistener");
-
-                                    if (task.isSuccessful()) {
-                                        // Sign in success, update UI with the signed-in user's information
-                                        Log.d(TAG, "signInWithCredential:success");
-                                        FirebaseUser user = mAuth.getCurrentUser();
-                                        login(user);
-                                    } else {
-                                        // If sign in fails, display a message to the user.
-                                        Log.w(TAG, "signInWithCredential:failure", task.getException());
-                                        noMoreLoad();
-
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                                        builder.setMessage("Invalid login! Please try again.")
-                                                .setTitle("Invalid Login");
-                                        AlertDialog invalidLoginDialog = builder.create();
-                                        invalidLoginDialog.show();
-                                    }
-                                }
-                            });
-                }
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
-                switch (e.getStatusCode()) {
-                    case CommonStatusCodes.NETWORK_ERROR:
-                        Log.d(TAG, "One-tap encountered a network error.");
-                        AlertDialog.Builder networkErrorBuilder = new AlertDialog.Builder(LoginActivity.this);
-                        networkErrorBuilder.setMessage("A network error occurred. Please try again.")
-                                .setTitle("Network Error");
-                        AlertDialog networkErrorDialog = networkErrorBuilder.create();
-                        networkErrorDialog.show();
-                        break;
-                    default: // includes CANCELED
-                        Log.d(TAG, "Couldn't get credential from result."
-                                + e.getLocalizedMessage());
-                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                        builder.setMessage("Invalid login! Please try again.")
-                                .setTitle("Invalid Login");
-                        AlertDialog invalidLoginDialog = builder.create();
-                        invalidLoginDialog.show();
-                        break;
-                }
+                // Google Sign In failed, update UI appropriately
+                Log.e(TAG, "Google sign in failed", e);
+
+                noMoreLoad();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setMessage("Invalid login! Please try again.")
+                        .setTitle("Invalid Login");
+                AlertDialog invalidLoginDialog = builder.create();
+                invalidLoginDialog.show();
             }
         } else if (requestCode == RC_SIGN_OUT) {
-            oneTapClient.signOut();
+            mGoogleSignInClient.signOut();
             FirebaseAuth.getInstance().signOut();
             noMoreLoad();
         }
     }
 
-    private void signIn() {
-        oneTapClient.beginSignIn(signInRequest)
-                .addOnSuccessListener(this, new OnSuccessListener<BeginSignInResult>() {
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onSuccess(BeginSignInResult result) {
-                        try {
-                            startIntentSenderForResult(
-                                    result.getPendingIntent().getIntentSender(), REQ_ONE_TAP,
-                                    null, 0, 0, 0);
-                        } catch (IntentSender.SendIntentException e) {
-                            Log.e(TAG, "Couldn't start One Tap UI: " + e.getLocalizedMessage());
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            login(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.e(TAG, "signInWithCredential:failure", task.getException());
+                            // updateUI(null);
+
+                            noMoreLoad();
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                            builder.setMessage("Invalid login! Please try again.")
+                                    .setTitle("Invalid Login");
+                            AlertDialog invalidLoginDialog = builder.create();
+                            invalidLoginDialog.show();
                         }
-                    }
-                })
-                .addOnFailureListener(this, new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // No saved credentials found. Launch the One Tap sign-up flow, or
-                        // do nothing and continue presenting the signed-out UI.
-                        Log.d(TAG, e.getLocalizedMessage());
                     }
                 });
     }
 
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
     private void login(FirebaseUser user) {
         if (user == null) return;
-        Log.i("LoginActivity", "login");
         load();
 
         String uid = user.getUid();
